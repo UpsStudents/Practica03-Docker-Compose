@@ -1,11 +1,16 @@
 import { Card } from "react-bootstrap";
 
-export const Contact = () => {
+export interface ContactProps {
+  name: string;
+  phoneNumber: string;
+}
+
+export const Contact: React.FC<ContactProps> = ({ name, phoneNumber }) => {
   return (
     <Card style={{ width: "18rem" }}>
       <Card.Body>
-        <Card.Title>Contacto</Card.Title>
-        <Card.Text>0987037858</Card.Text>
+        <Card.Title>{name}</Card.Title>
+        <Card.Text>{phoneNumber}</Card.Text>
       </Card.Body>
     </Card>
   );

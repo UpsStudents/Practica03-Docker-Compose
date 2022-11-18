@@ -3,37 +3,42 @@ import logo from "./logo.svg";
 import "./App.css";
 import { Button } from "react-bootstrap";
 import { Contact } from "./Components/Contact";
-import { Formik, Field, FormikHelpers } from "formik";
+import { useFormik } from "formik";
 import Form from "react-bootstrap/Form";
-
-interface Contact {
-  name: string;
-  phoneNumber: string;
-}
+import { Contacts, IContact } from "./ContactService";
 
 function App() {
+  const [contacts, setContacts] = React.useState<IContact[]>([]);
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      phoneNumber: "",
+    },
+    onSubmit: async (values) => {
+      await Contacts.addContact(values);
+      formik.resetForm();
+    },
+  });
+
+  React.useEffect(() => {
+    Contacts.getContacts().then((contacts) => {
+      setContacts(contacts);
+    });
+  }, []);
+
   return (
     <div className="container">
-      <Formik
-        initialValues={{
-          name: "",
-          phoneNumber: "",
-        }}
-        onSubmit={(
-          values: Contact,
-          { setSubmitting }: FormikHelpers<Contact>
-        ) => {
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            setSubmitting(false);
-          }, 500);
-        }}
-      ></Formik>
-
-      <Form style={{ margin: "1rem" }}>
+      <Form style={{ margin: "1rem" }} onSubmit={formik.handleSubmit}>
         <Form.Group className="mb-3">
           <Form.Label>Nombre:</Form.Label>
-          <Form.Control type="text" placeholder="Ingresa un nombre" />
+          <Form.Control
+            type="text"
+            placeholder="Ingresa un nombre"
+            onChange={formik.handleChange}
+            value={formik.values.name}
+            name="name"
+            id="name"
+          />
         </Form.Group>
 
         <Form.Group className="mb-3">
@@ -41,6 +46,10 @@ function App() {
           <Form.Control
             type="number"
             placeholder="Ingresa un número telefónico"
+            onChange={formik.handleChange}
+            value={formik.values.phoneNumber}
+            name="phoneNumber"
+            id="phoneNumber"
           />
         </Form.Group>
         <Button variant="primary" type="submit">
@@ -48,11 +57,9 @@ function App() {
         </Button>
       </Form>
       <div className="contacts-container">
-        <Contact />
-        <Contact />
-        <Contact />
-        <Contact />
-        <Contact />
+        {contacts.map((contact) => (
+          <Contact {...contact} />
+        ))}
       </div>
     </div>
   );

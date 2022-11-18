@@ -2,6 +2,9 @@ version: "3"
 services:
   postgrescontacts:
     image: postgres
+    container_name: postgrescontacts
+    volumes:
+      - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     environment:
@@ -17,7 +20,8 @@ services:
       retries: 5
 
   backend:
-    image: contacts
+    image: bncc111/backend
+    container_name: backend
     build:
       context: ./backend/
       dockerfile: Dockerfile
@@ -30,7 +34,8 @@ services:
       - netnpx
 
   react:
-    image: react
+    image: bncc111/react
+    container_name: react
     build:
       context: ./frontend/
       dockerfile: Dockerfile
@@ -41,6 +46,9 @@ services:
         condition: service_healthy
     networks:
       - netnpx
+
+volumes:
+  db-data:
 
 networks:
   netnpx:
