@@ -16,14 +16,21 @@ function App() {
     },
     onSubmit: async (values) => {
       await Contacts.addContact(values);
+      const contacts = await Contacts.getContacts();
+      setContacts(contacts);
       formik.resetForm();
     },
   });
 
   React.useEffect(() => {
-    Contacts.getContacts().then((contacts) => {
-      setContacts(contacts);
-    });
+    Contacts.getContacts()
+      .then((contacts) => {
+        setContacts(contacts);
+      })
+      .catch((err) => {
+        console.log(err);
+        setContacts([]);
+      });
   }, []);
 
   return (
