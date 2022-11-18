@@ -5,8 +5,8 @@ services:
     container_name: postgrescontacts
     volumes:
       - db-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"
     environment:
       POSTGRES_PASSWORD: secret
       POSTGRES_USER: dev_admin
@@ -25,8 +25,8 @@ services:
     build:
       context: ./backend/
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
     depends_on:
       postgrescontacts:
         condition: service_healthy
