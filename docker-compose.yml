@@ -1,0 +1,47 @@
+version: "3"
+services:
+  postgrescontacts:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: dev_admin
+      POSTGRES_DB: contactsdb
+    networks:
+      - netnpx
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "contactsdb", "-U", "dev_admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: contacts
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgrescontacts:
+        condition: service_healthy
+    networks:
+      - netnpx
+
+  react:
+    image: react
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      postgrescontacts:
+        condition: service_healthy
+    networks:
+      - netnpx
+
+networks:
+  netnpx:
+    driver: bridge
